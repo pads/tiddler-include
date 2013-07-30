@@ -12,3 +12,10 @@ logs
 results
 
 npm-debug.log
+node_modules
+
+lib
+
+.grunt
+
+_SpecRunner.html
