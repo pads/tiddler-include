@@ -6,15 +6,38 @@
  * Licensed under the MIT license.
  */
 (function($) {
+  //TODO: Turn into a singleton
+  var TiddlerInclude = function() {};
 
-  var TiddlerInclude = {
-    init: function() {
+  TiddlerInclude.init = function(spaceName) {
 
-    }
+    this.spaceName = spaceName;
+    this.bagURI = '/bags/' + spaceName + '_public/tiddlers/';
   };
 
-  $.tiddlerInclude = function() {
+  TiddlerInclude.getSpaceName = function() {
+
+    return this.spaceName;
+  };
+
+  TiddlerInclude.getBagURI = function() {
+
+    return this.bagURI;
+  };
+
+  $.tiddlerInclude = function(theSpaceName) {
+
+    TiddlerInclude.init(theSpaceName);
+
     return TiddlerInclude;
+  };
+
+  $.fn.tiddlerInclude = function() {
+    var element = this;
+    var tiddlerTitle = element.data('tiddler');
+    $.getJSON(TiddlerInclude.getBagURI() + tiddlerTitle + '.json?render=1', function(data) {
+      element.html(data.render);
+    });
   };
 
 }(jQuery));

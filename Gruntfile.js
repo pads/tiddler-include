@@ -19,13 +19,14 @@ module.exports = function(grunt) {
       },
       test: {
         packages: {
-          'jasmine-jquery': '1.5.5'
+          'jasmine-jquery': '1.5.5',
+          'sinonjs': '1.7.1'
         },
         store: 'test/lib'
       }
     },
     clean: {
-      files: ['dist']
+      files: ['dist', 'tmp']
     },
     concat: {
       options: {
@@ -51,8 +52,27 @@ module.exports = function(grunt) {
         src: 'src/**/*.js',
         options: {
           specs: 'test/*Spec.js',
-          helpers: 'test/lib/jasmine-jquery/lib/jasmine-jquery.js',
-          vendor: 'lib/jquery/jquery.js'
+          helpers: [
+            'test/lib/jasmine-jquery/lib/jasmine-jquery.js',
+            'test/lib/sinonjs/sinon.js'
+            ],
+          vendor: 'lib/jquery/jquery.js',
+          template: require("grunt-template-jasmine-istanbul"),
+          templateOptions: {
+            coverage: 'tmp/coverage/coverage.json',
+            report: {
+              type: 'lcov',
+              options: {
+                dir: 'tmp/coverage'
+              }
+            },
+            thresholds: {
+              lines: 80,
+              statements: 80,
+              branches: 80,
+              functions: 80
+            }
+          }
         }
       }
     },
@@ -90,11 +110,18 @@ module.exports = function(grunt) {
         tasks: ['jshint:test', 'test']
       },
     },
+    copy: {
+      tsapp: {
+        files: [
+          { expand: true, flatten: true, src: ['dist/*.js'], dest: 'tsapp/assets/', filter: 'isFile' }
+        ]
+      }
+    }
   });
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
   grunt.registerTask('test', ['jasmine']);
-  grunt.registerTask('default', ['bowerful', 'jshint', 'clean', 'test', 'concat', 'uglify']);
+  grunt.registerTask('default', ['clean', 'bowerful', 'jshint', 'test', 'concat', 'uglify', 'copy']);
 
 };

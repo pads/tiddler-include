@@ -14,12 +14,14 @@
   "predef": [
     "jQuery",
     "$",
+    "sinon",
     "jasmine",
     "loadFixtures",
     "describe",
     "beforeEach",
     "afterEach",
     "it",
+    "xit",
     "expect"
   ]
 }
