@@ -20,8 +20,14 @@ describe('Tiddler Include', function() {
 			if($.fn.data.restore) {
 				$.fn.data.restore();
 			}
+			if($.fn.empty.restore) {
+				$.fn.empty.restore();
+			}
 			if($.fn.html.restore) {
 				$.fn.html.restore();
+			}
+			if($.fn.append.restore) {
+				$.fn.append.restore();
 			}
 		});
 
@@ -35,6 +41,15 @@ describe('Tiddler Include', function() {
 			var $body = $('body');
 
 			expect($('body').tiddlerInclude()).toBe($body);
+		});
+
+		it('should empty the target element of contents on initialisation', function() {
+
+			sinon.stub($.fn, 'empty');
+
+			$('body').tiddlerInclude();
+
+			expect($.fn.empty.called).toBeTruthy();
 		});
 
 		it('should read the tiddler name from the element data-tiddler attribute', function() {
@@ -71,13 +86,42 @@ describe('Tiddler Include', function() {
 		it('should render the tiddler within the target element', function() {
 
 			var expectedContent = '<h1 id=\"fragment-one\">Fragment One</h1>\n<ul>\n<li>One</li>\n<li>1</li>\n</ul>';
-			sinon.stub($.fn, 'data').returns('MyTiddler');
+			sinon.stub($.fn, 'data').withArgs('tiddler').returns('MyTiddler');
 			sinon.stub($, 'ajax').yieldsTo('success', { render: expectedContent });
 			sinon.stub($.fn, 'html');
 
 			$('body').tiddlerInclude();
 
 			expect($.fn.html.calledWith(expectedContent)).toBeTruthy();
+		});
+
+		it('should get all tiddlers when only a bag is provided', function() {
+
+			var expectedUrl = '/bags/mybag/tiddlers.json?render=1';
+			sinon.stub($.fn, 'data').withArgs('bag').returns('mybag');
+			sinon.stub($, 'ajax');
+
+			$('body').tiddlerInclude();
+
+			expect($.ajax.calledWithMatch({  url: expectedUrl })).toBeTruthy();
+		});
+
+		it('should render the tiddlers within the target element, given only the bag', function() {
+
+			var expectedContent1 = '<h1 id=\"fragment-one\">Fragment One</h1>\n<ul>\n<li>One</li>\n<li>1</li>\n</ul>';
+			var expectedContent2 = '<h1 id=\"fragment-two\">Fragment Two</h1>\n<ul>\n<li>Two</li>\n<li>2</li>\n</ul>';
+
+			sinon.stub($.fn, 'data').withArgs('bag').returns('mybag');
+			sinon.stub($, 'ajax').yieldsTo('success',
+				[
+					{ render: expectedContent1 }, { render: expectedContent2 }
+				]);
+			sinon.stub($.fn, 'append');
+
+			$('body').tiddlerInclude();
+
+			expect($.fn.append.calledWith('<div class="tiddler">' + expectedContent1 + '</div>')).toBeTruthy();
+			expect($.fn.append.calledWith('<div class="tiddler">' + expectedContent2 + '</div>')).toBeTruthy();
 		});
 	});
 });

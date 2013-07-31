@@ -6,10 +6,12 @@
 </head>
 <body>
 	<div id="tiddler" data-bag="pads_public" data-tiddler="Fragment1">tiddler one loaded here</div>
+	<div id="bag" data-bag="foo_public">tiddlers from bag loaded here</div>
 	<script src="/bags/common/tiddlers/jquery.js"></script>
 	<script src="jquery.tiddler-include.js"></script>
 	<script>
 		$('#tiddler').tiddlerInclude();
+		$('#bag').tiddlerInclude();
 	</script>
 </body>
 </html>

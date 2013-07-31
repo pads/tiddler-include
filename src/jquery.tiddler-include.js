@@ -14,14 +14,33 @@
       this.$element = $(element);
       this.tiddlerTitle = this.$element.data('tiddler');
       this.bagName = this.$element.data('bag');
-      this.bagURI = '/bags/' + this.bagName + '/tiddlers/';
+      this.bagURI = '/bags/' + this.bagName + '/tiddlers';
+
+      this.$element.empty();
     },
     loadTiddler: function() {
 
       var instance = this;
-      $.getJSON(instance.bagURI + instance.tiddlerTitle + '.json?render=1', function(data) {
-        instance.$element.html(data.render);
+      $.getJSON(instance.bagURI + '/' + instance.tiddlerTitle + '.json?render=1', function(tiddler) {
+        instance.$element.html(tiddler.render);
       });
+    },
+    loadBag: function() {
+
+      var instance = this;
+      $.getJSON(instance.bagURI + '.json?render=1', function(data) {
+        $(data).each(function(index, tiddler) {
+          instance.$element.append('<div class="tiddler">' + tiddler.render + '</div>');
+        });
+      });
+    },
+    determineAction: function() {
+
+      if(this.tiddlerTitle) {
+        this.loadTiddler();
+      } else {
+        this.loadBag();
+      }
     }
   };
 
@@ -33,7 +52,7 @@
       var tiddlerInclude = Object.create(TiddlerInclude);
 
       tiddlerInclude.init($element);
-      tiddlerInclude.loadTiddler();
+      tiddlerInclude.determineAction();
 
       $.data(this, 'tiddler-include', tiddlerInclude);
     });
