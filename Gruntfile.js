@@ -133,7 +133,7 @@ module.exports = function(grunt) {
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-  grunt.registerTask('test', ['jasmine']);
+  grunt.registerTask('test', ['jasmine:coverage']);
   grunt.registerTask('default', ['clean', 'bowerful', 'jshint', 'test', 'concat', 'uglify', 'copy']);
 
 };
