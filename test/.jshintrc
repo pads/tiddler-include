@@ -18,6 +18,7 @@
     "jasmine",
     "loadFixtures",
     "describe",
+    "xdescribe",
     "beforeEach",
     "afterEach",
     "it",
