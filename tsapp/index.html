@@ -5,11 +5,10 @@
 	<title>Tiddler Include Example</title>
 </head>
 <body>
-	<div id="tiddler" data-tiddler="Fragment1">tiddler one loaded here</div>
+	<div id="tiddler" data-bag="pads_public" data-tiddler="Fragment1">tiddler one loaded here</div>
 	<script src="/bags/common/tiddlers/jquery.js"></script>
 	<script src="jquery.tiddler-include.js"></script>
 	<script>
-		$.tiddlerInclude('pads');
 		$('#tiddler').tiddlerInclude();
 	</script>
 </body>

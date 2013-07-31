@@ -6,37 +6,36 @@
  * Licensed under the MIT license.
  */
 (function($) {
-  //TODO: Turn into a singleton
-  var TiddlerInclude = function() {};
 
-  TiddlerInclude.init = function(spaceName) {
+  var TiddlerInclude = {
 
-    this.spaceName = spaceName;
-    this.bagURI = '/bags/' + spaceName + '_public/tiddlers/';
-  };
+    init: function(element) {
 
-  TiddlerInclude.getSpaceName = function() {
+      this.$element = $(element);
+      this.tiddlerTitle = this.$element.data('tiddler');
+      this.bagName = this.$element.data('bag');
+      this.bagURI = '/bags/' + this.bagName + '/tiddlers/';
+    },
+    loadTiddler: function() {
 
-    return this.spaceName;
-  };
-
-  TiddlerInclude.getBagURI = function() {
-
-    return this.bagURI;
-  };
-
-  $.tiddlerInclude = function(theSpaceName) {
-
-    TiddlerInclude.init(theSpaceName);
-
-    return TiddlerInclude;
+      var instance = this;
+      $.getJSON(instance.bagURI + instance.tiddlerTitle + '.json?render=1', function(data) {
+        instance.$element.html(data.render);
+      });
+    }
   };
 
   $.fn.tiddlerInclude = function() {
-    var element = this;
-    var tiddlerTitle = element.data('tiddler');
-    $.getJSON(TiddlerInclude.getBagURI() + tiddlerTitle + '.json?render=1', function(data) {
-      element.html(data.render);
+
+    return this.each(function () {
+
+      var $element = $(this);
+      var tiddlerInclude = Object.create(TiddlerInclude);
+
+      tiddlerInclude.init($element);
+      tiddlerInclude.loadTiddler();
+
+      $.data(this, 'tiddler-include', tiddlerInclude);
     });
   };
 

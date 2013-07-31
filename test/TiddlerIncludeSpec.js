@@ -2,37 +2,15 @@ describe('Tiddler Include', function() {
 
 	describe('TidderInclude Object', function() {
 
-		it('should be obtainable from the jQuery object', function() {
+		it('should be obtainable from the jQuery selector object as data', function() {
 
-			var tiddlerInclude = $.tiddlerInclude();
+			var tiddlerInclude = $('body').tiddlerInclude().data('tiddler-include');
 
-			expect(tiddlerInclude).toBeDefined();
-		});
-
-		it('should store the space name', function() {
-
-			var tiddlerInclude = $.tiddlerInclude('outerspace');
-
-			expect(tiddlerInclude.getSpaceName()).toBe('outerspace');
-		});
-
-		it('should set the appropriate bag URI given the space name', function() {
-
-			var tiddlerInclude = $.tiddlerInclude('outerspace');
-
-			expect(tiddlerInclude.getBagURI()).toBe('/bags/outerspace_public/tiddlers/');
+			expect(tiddlerInclude).not.toBe(null);
 		});
 	});
 
 	describe('TiddlerInclude Plugin', function() {
-
-		//jasmine.getFixtures().fixturesPath = 'test/fixtures';
-
-		beforeEach(function() {
-
-			$.tiddlerInclude('myspace');
-			//loadFixtures('fixture.html');
-		});
 
 		afterEach(function() {
 
@@ -52,22 +30,40 @@ describe('Tiddler Include', function() {
 			expect($.fn.tiddlerInclude).toBeDefined();
 		});
 
-		it('should read the tiddler name from the element data attribute', function() {
+		it('should be return a jQuery object for chaining', function() {
+
+			var $body = $('body');
+
+			expect($('body').tiddlerInclude()).toBe($body);
+		});
+
+		it('should read the tiddler name from the element data-tiddler attribute', function() {
 
 			sinon.stub($.fn, 'data');
 
-			$('#tiddler1').tiddlerInclude();
+			$('body').tiddlerInclude();
 
 			expect($.fn.data.calledWith('tiddler')).toBeTruthy();
 		});
 
+		it('should read the bag name from the element data-space attribute', function() {
+
+			sinon.stub($.fn, 'data');
+
+			$('body').tiddlerInclude();
+
+			expect($.fn.data.calledWith('bag')).toBeTruthy();
+		});
+
 		it('should get the tiddler from the server', function() {
 
-			var expectedUrl = '/bags/myspace_public/tiddlers/MyTiddler.json?render=1';
-			sinon.stub($.fn, 'data').returns('MyTiddler');
+			var expectedUrl = '/bags/mybag/tiddlers/MyTiddler.json?render=1';
+			var dataStub = sinon.stub($.fn, 'data');
+			dataStub.withArgs('tiddler').returns('MyTiddler');
+			dataStub.withArgs('bag').returns('mybag');
 			sinon.stub($, 'ajax');
 
-			$('#tiddler1').tiddlerInclude();
+			$('body').tiddlerInclude();
 
 			expect($.ajax.calledWithMatch({  url: expectedUrl })).toBeTruthy();
 		});
@@ -79,7 +75,7 @@ describe('Tiddler Include', function() {
 			sinon.stub($, 'ajax').yieldsTo('success', { render: expectedContent });
 			sinon.stub($.fn, 'html');
 
-			$('#tiddler1').tiddlerInclude();
+			$('body').tiddlerInclude();
 
 			expect($.fn.html.calledWith(expectedContent)).toBeTruthy();
 		});
