@@ -57,7 +57,18 @@ module.exports = function(grunt) {
             'test/lib/sinonjs/sinon.js'
             ],
           vendor: 'lib/jquery/jquery.js',
-          keepRunner: true,
+          keepRunner: true
+        }
+      },
+      coverage: {
+        src: 'src/**/*.js',
+          options: {
+          specs: 'test/*Spec.js',
+          helpers: [
+            'test/lib/jasmine-jquery/lib/jasmine-jquery.js',
+            'test/lib/sinonjs/sinon.js'
+            ],
+          vendor: 'lib/jquery/jquery.js',
           template: require("grunt-template-jasmine-istanbul"),
           templateOptions: {
             coverage: 'tmp/coverage/coverage.json',
@@ -104,11 +115,11 @@ module.exports = function(grunt) {
       },
       src: {
         files: '<%= jshint.src.src %>',
-        tasks: ['jshint:src', 'test']
+        tasks: ['jshint:src', 'jasmine:default']
       },
       test: {
         files: '<%= jshint.test.src %>',
-        tasks: ['jshint:test', 'test']
+        tasks: ['jshint:test', 'jasmine:default']
       },
     },
     copy: {
