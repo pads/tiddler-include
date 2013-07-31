@@ -46,9 +46,11 @@ This task:
 
 ### Manual Testing
 
-`grunt`
-`cd tsapp`
-`tsapp serve`
+```
+grunt
+cd tsapp
+tsapp serve
+```
 
 Open `http://localhost:8080/index.html` in your browser.
 
