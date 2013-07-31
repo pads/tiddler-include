@@ -57,6 +57,7 @@ module.exports = function(grunt) {
             'test/lib/sinonjs/sinon.js'
             ],
           vendor: 'lib/jquery/jquery.js',
+          keepRunner: true,
           template: require("grunt-template-jasmine-istanbul"),
           templateOptions: {
             coverage: 'tmp/coverage/coverage.json',
