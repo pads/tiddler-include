@@ -1,5 +1,17 @@
 describe('Tiddler Include', function() {
 
+	var stubbedAjax;
+
+	beforeEach(function() {
+
+		stubbedAjax = sinon.stub($, 'ajax');
+	});
+
+	afterEach(function() {
+
+		stubbedAjax.restore();
+	});
+
 	describe('TidderInclude Object', function() {
 
 		it('should be obtainable from the jQuery selector object as data', function() {
@@ -12,11 +24,10 @@ describe('Tiddler Include', function() {
 
 	describe('TiddlerInclude Plugin', function() {
 
+		jasmine.getFixtures().fixturesPath = 'test/fixtures';
+
 		afterEach(function() {
 
-			if($.ajax.restore) {
-				$.ajax.restore();
-			}
 			if($.fn.data.restore) {
 				$.fn.data.restore();
 			}
@@ -76,18 +87,17 @@ describe('Tiddler Include', function() {
 			var dataStub = sinon.stub($.fn, 'data');
 			dataStub.withArgs('tiddler').returns('MyTiddler');
 			dataStub.withArgs('bag').returns('mybag');
-			sinon.stub($, 'ajax');
 
 			$('body').tiddlerInclude();
 
-			expect($.ajax.calledWithMatch({  url: expectedUrl })).toBeTruthy();
+			expect(stubbedAjax.calledWithMatch({  url: expectedUrl })).toBeTruthy();
 		});
 
 		it('should render the tiddler within the target element', function() {
 
 			var expectedContent = '<h1 id=\"fragment-one\">Fragment One</h1>\n<ul>\n<li>One</li>\n<li>1</li>\n</ul>';
 			sinon.stub($.fn, 'data').withArgs('tiddler').returns('MyTiddler');
-			sinon.stub($, 'ajax').yieldsTo('success', { render: expectedContent });
+			stubbedAjax.yieldsTo('success', { render: expectedContent });
 			sinon.stub($.fn, 'html');
 
 			$('body').tiddlerInclude();
@@ -99,11 +109,10 @@ describe('Tiddler Include', function() {
 
 			var expectedUrl = '/bags/mybag/tiddlers.json?render=1';
 			sinon.stub($.fn, 'data').withArgs('bag').returns('mybag');
-			sinon.stub($, 'ajax');
 
 			$('body').tiddlerInclude();
 
-			expect($.ajax.calledWithMatch({  url: expectedUrl })).toBeTruthy();
+			expect(stubbedAjax.calledWithMatch({  url: expectedUrl })).toBeTruthy();
 		});
 
 		it('should render the tiddlers within the target element, given only the bag', function() {
@@ -112,7 +121,7 @@ describe('Tiddler Include', function() {
 			var expectedContent2 = '<h1 id=\"fragment-two\">Fragment Two</h1>\n<ul>\n<li>Two</li>\n<li>2</li>\n</ul>';
 
 			sinon.stub($.fn, 'data').withArgs('bag').returns('mybag');
-			sinon.stub($, 'ajax').yieldsTo('success',
+			stubbedAjax.yieldsTo('success',
 				[
 					{ render: expectedContent1 }, { render: expectedContent2 }
 				]);
